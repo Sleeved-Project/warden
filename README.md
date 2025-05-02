@@ -35,4 +35,4 @@ docker-compose build
 docker-compose up -d
 ```
 
-4. The service is now available at http://localhost:3333
+4. The service is now available at http://localhost:3333 !
