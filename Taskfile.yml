@@ -64,9 +64,19 @@ tasks:
 
   # Development commands
   test:
-    desc: Run tests
+    desc: Run tests (optional args - use test:unit or test:functional for specific suites)
     cmds:
-      - docker compose exec app npm test
+      - docker compose exec app npm test {{.CLI_ARGS}}
+
+  test:unit:
+    desc: Run unit tests only
+    cmds:
+      - docker compose exec app node ace test unit {{.CLI_ARGS}}
+
+  test:functional:
+    desc: Run functional tests only
+    cmds:
+      - docker compose exec app node ace test functional {{.CLI_ARGS}}
 
   lint:
     desc: Run linting
