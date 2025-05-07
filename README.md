@@ -37,6 +37,30 @@ docker-compose up -d
 
 4. The service is now available at http://localhost:3310
 
+## Task Commands Reference
+
+This project uses [Task](https://taskfile.dev/) for managing development workflows. Below are the available commands:
+
+| Command                  | Description                       | Example                                |
+| ------------------------ | --------------------------------- | -------------------------------------- |
+| `task`                   | Display all available commands    | `task`                                 |
+| **Application Commands** |                                   |                                        |
+| `task build`             | Build the application             | `task build`                           |
+| `task start`             | Start all services                | `task start`                           |
+| `task stop`              | Stop all services                 | `task stop`                            |
+| `task restart`           | Restart all services              | `task restart`                         |
+| `task logs`              | Show application logs             | `task logs`                            |
+| `task shell`             | Open a shell in the app container | `task shell`                           |
+| **Development Commands** |                                   |                                        |
+| `task test`              | Run tests                         | `task test`                            |
+| `task lint`              | Run linting                       | `task lint`                            |
+| `task format`            | Format code                       | `task format`                          |
+| **Database Commands**    |                                   |                                        |
+| `task db:migrate`        | Run database migrations           | `task db:migrate`                      |
+| `task db:rollback`       | Rollback the last migration       | `task db:rollback`                     |
+| `task db:migration`      | Create a new migration            | `task db:migration create_roles_table` |
+| `task db:seed`           | Run database seeders              | `task db:seed`                         |
+
 ## Code Quality Tools
 
 ### Husky
@@ -74,24 +98,4 @@ npm run typecheck
 
 # Run all checks at once
 npm run check
-```
-
-## Testing
-
-The project uses Japa testing framework integrated with AdonisJS.
-
-### Running Tests
-
-```bash
-# Run all tests
-npm run test
-
-# Run only unit tests
-node ace test unit
-
-# Run only functional tests
-node ace test functional
-
-# Run tests with coverage
-node ace test --coverage
 ```
