@@ -52,6 +52,14 @@ tasks:
     cmds:
       - docker compose build {{.CLI_ARGS}}
 
+  rebuild:
+    desc: Rebuild and restart
+    cmds:
+      - task: stop
+      - task: build
+      - task: start
+      - task: logs
+
   logs:
     desc: Show application logs
     cmds:

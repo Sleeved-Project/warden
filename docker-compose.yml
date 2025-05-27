@@ -4,22 +4,11 @@ services:
   app:
     build: .
     ports:
-      - '3310:3333'
+      - '0.0.0.0:3310:3333'
     depends_on:
       - mysql
-    environment:
-      - TZ=UTC
-      - PORT=3333
-      - HOST=0.0.0.0
-      - LOG_LEVEL=info
-      - APP_KEY=${APP_KEY}
-      - NODE_ENV=development
-      - DB_CONNECTION=mysql
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_USER=root
-      - DB_PASSWORD=password
-      - DB_DATABASE=warden
+    env_file:
+      - .env
     volumes:
       - ./:/app
       - /app/node_modules

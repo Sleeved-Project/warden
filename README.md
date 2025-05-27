@@ -41,25 +41,22 @@ docker-compose up -d
 
 This project uses [Task](https://taskfile.dev/) for managing development workflows. Below are the available commands:
 
-| Command                  | Description                       | Example                                |
-| ------------------------ | --------------------------------- | -------------------------------------- |
-| `task`                   | Display all available commands    | `task`                                 |
-| **Application Commands** |                                   |                                        |
-| `task build`             | Build the application             | `task build`                           |
-| `task start`             | Start all services                | `task start`                           |
-| `task stop`              | Stop all services                 | `task stop`                            |
-| `task restart`           | Restart all services              | `task restart`                         |
-| `task logs`              | Show application logs             | `task logs`                            |
-| `task shell`             | Open a shell in the app container | `task shell`                           |
-| **Development Commands** |                                   |                                        |
-| `task test`              | Run tests                         | `task test`                            |
-| `task lint`              | Run linting                       | `task lint`                            |
-| `task format`            | Format code                       | `task format`                          |
-| **Database Commands**    |                                   |                                        |
-| `task db:migrate`        | Run database migrations           | `task db:migrate`                      |
-| `task db:rollback`       | Rollback the last migration       | `task db:rollback`                     |
-| `task db:migration`      | Create a new migration            | `task db:migration create_roles_table` |
-| `task db:seed`           | Run database seeders              | `task db:seed`                         |
+| Command             | Description                         |
+| ------------------- | ----------------------------------- |
+| `task build`        | Build the services                  |
+| `task start`        | Start the services                  |
+| `task stop`         | Stop the services                   |
+| `task restart`      | Restart all services                |
+| `task rebuild`      | Stop, rebuild, and restart services |
+| `task logs`         | View application logs               |
+| `task shell`        | Open a shell in the app container   |
+| `task db:migrate`   | Run database migrations             |
+| `task db:rollback`  | Rollback migrations                 |
+| `task db:migration` | Create a new migration              |
+| `task db:seed`      | Run database seeders                |
+| `task test`         | Run tests                           |
+| `task lint`         | Run linting                         |
+| `task format`       | Format code                         |
 
 ## Code Quality Tools
 
