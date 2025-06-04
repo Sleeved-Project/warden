@@ -1,10 +1,10 @@
 version: '3'
 
 services:
-  app:
+  api:
     build: .
     ports:
-      - '0.0.0.0:3310:3333'
+      - '0.0.0.0:8081:8081'
     depends_on:
       - mysql
     env_file:
@@ -17,10 +17,9 @@ services:
   mysql:
     image: mysql:8
     ports:
-      - '3306:3306'
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=warden
+      - '3310:3306'
+    env_file:
+      - .env
     volumes:
       - mysql-data:/var/lib/mysql
 
