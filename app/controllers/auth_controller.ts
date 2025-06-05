@@ -32,11 +32,9 @@ export default class AuthController {
   async me({ auth, response }: HttpContext) {
     const user = auth.user!
     return response.ok({
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-      },
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
     })
   }
 }
