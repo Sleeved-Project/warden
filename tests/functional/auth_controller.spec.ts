@@ -96,10 +96,8 @@ test.group('Authentication Controller', (group) => {
 
     response.assertStatus(200)
     response.assertBodyContains({
-      user: {
-        email: user.email,
-        fullName: user.fullName,
-      },
+      email: user.email,
+      fullName: user.fullName,
     })
   })
 
