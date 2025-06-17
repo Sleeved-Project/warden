@@ -35,6 +35,7 @@ export default class AuthController {
       id: user.id,
       email: user.email,
       fullName: user.fullName,
+      isVerified: user.isVerified,
     })
   }
 }

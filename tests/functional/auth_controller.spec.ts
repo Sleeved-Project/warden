@@ -2,11 +2,25 @@ import { test } from '@japa/runner'
 import User from '#models/user'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { UserFactory } from '#database/factories/user_factory'
+import mail from '@adonisjs/mail/services/main'
+import { Message } from '@adonisjs/mail'
 
 test.group('Authentication Controller', (group) => {
-  group.each.setup(() => testUtils.db().withGlobalTransaction())
+  let fakeMail: any
 
-  test('register endpoint creates a new user and returns token', async ({ client, assert }) => {
+  group.each.setup(() => {
+    fakeMail = mail.fake()
+    return testUtils.db().withGlobalTransaction()
+  })
+
+  group.each.teardown(() => {
+    mail.restore()
+  })
+
+  test('register endpoint creates a new unverified user without token', async ({
+    client,
+    assert,
+  }) => {
     const userData = {
       email: 'test@example.com',
       password: 'password123',
@@ -17,17 +31,24 @@ test.group('Authentication Controller', (group) => {
 
     response.assertStatus(201)
     response.assertBodyContains({
+      requiresVerification: true,
       user: {
         email: userData.email,
         fullName: userData.fullName,
+        isVerified: false,
       },
-      type: 'bearer',
     })
 
-    assert.exists(response.body().token)
+    assert.exists(response.body().message)
+    assert.notExists(response.body().token)
 
     const user = await User.findBy('email', userData.email)
     assert.exists(user)
+    assert.equal(user!.isVerified, 0)
+
+    fakeMail.messages.assertSent((message: Message) => {
+      return message.hasTo(userData.email) && message.hasSubject('Sleeved - Your verification code')
+    })
   })
 
   test('register endpoint returns 409 for duplicate email', async ({ client }) => {
@@ -45,8 +66,10 @@ test.group('Authentication Controller', (group) => {
     })
   })
 
-  test('login endpoint returns token for valid credentials', async ({ client, assert }) => {
-    const user = await UserFactory.create()
+  test('login endpoint returns token for verified users', async ({ client, assert }) => {
+    const user = await UserFactory.merge({
+      isVerified: true,
+    }).create()
 
     const response = await client.post('/api/v1/login').json({
       email: user.email,
@@ -65,8 +88,26 @@ test.group('Authentication Controller', (group) => {
     assert.exists(response.body().token)
   })
 
+  test('login endpoint returns 403 for unverified users', async ({ client }) => {
+    const user = await UserFactory.merge({
+      isVerified: false,
+    }).create()
+
+    const response = await client.post('/api/v1/login').json({
+      email: user.email,
+      password: 'password123',
+    })
+
+    response.assertStatus(403)
+    response.assertBodyContains({
+      code: 'E_EMAIL_NOT_VERIFIED',
+    })
+  })
+
   test('login endpoint returns 401 for invalid credentials', async ({ client }) => {
-    const user = await UserFactory.create()
+    const user = await UserFactory.merge({
+      isVerified: true,
+    }).create()
 
     const response = await client.post('/api/v1/login').json({
       email: user.email,
@@ -79,10 +120,11 @@ test.group('Authentication Controller', (group) => {
     })
   })
 
-  test('me endpoint returns user information when authenticated', async ({ client }) => {
+  test('me endpoint returns user information when authenticated', async ({ client, assert }) => {
     const user = await UserFactory.merge({
       email: 'me@example.com',
       fullName: 'Me User',
+      isVerified: true,
     }).create()
 
     const loginResponse = await client.post('/api/v1/login').json({
@@ -95,10 +137,13 @@ test.group('Authentication Controller', (group) => {
     const response = await client.get('/api/v1/me').header('Authorization', `Bearer ${token}`)
 
     response.assertStatus(200)
-    response.assertBodyContains({
-      email: user.email,
-      fullName: user.fullName,
-    })
+
+    const body = response.body()
+    assert.equal(body.email, user.email)
+    assert.equal(body.fullName, user.fullName)
+
+    assert.exists(body.isVerified)
+    assert.isTrue(!!body.isVerified)
   })
 
   test('me endpoint returns 401 when not authenticated', async ({ client }) => {

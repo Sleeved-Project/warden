@@ -1,28 +1,61 @@
 import User from '#models/user'
 import hash from '@adonisjs/core/services/hash'
 import TokenService from '#services/token_service'
-import { RegisterData, LoginData, TokenResponse } from '#types/auth'
+import EmailVerificationService from '#services/email_verification_service'
+import { RegisterData, LoginData, TokenResponse, RegisterResponse, UserPayload } from '#types/auth'
 import DuplicateEmailException from '#exceptions/duplicate_email_exception'
 import InvalidCredentialsException from '#exceptions/invalid_credentials_exception'
 import ServerErrorException from '#exceptions/server_error_exception'
+import EmailNotVerifiedException from '#exceptions/email_not_verified_exception'
 import { inject } from '@adonisjs/core'
+import db from '@adonisjs/lucid/services/db'
 
 @inject()
 export default class AuthService {
-  constructor(protected tokenService: TokenService) {}
+  constructor(
+    protected tokenService: TokenService,
+    protected emailVerificationService: EmailVerificationService
+  ) {}
 
   /**
    * Register a new user
    */
-  async register(data: RegisterData): Promise<TokenResponse> {
+  async register(data: RegisterData): Promise<RegisterResponse> {
     try {
-      const user = await User.create({
-        email: data.email,
-        password: data.password,
-        fullName: data.fullName,
+      // Begin a database transaction to ensure atomicity of the registration process
+      // If any operation within this transaction fails, all changes will be rolled back
+      const result = await db.transaction(async (trx) => {
+        // Créer l'utilisateur dans la transaction
+        const user = await User.create(
+          {
+            email: data.email,
+            password: data.password,
+            fullName: data.fullName,
+            isVerified: false,
+          },
+          { client: trx }
+        )
+
+        // Send verification email
+        await this.emailVerificationService.sendVerificationEmail(user, trx)
+
+        // Format user data for response
+        const userData: UserPayload = {
+          id: user.id,
+          email: user.email,
+          fullName: user.fullName,
+          isVerified: false,
+        }
+
+        // Return registration success
+        return {
+          user: userData,
+          requiresVerification: true,
+          message: 'Registration successful. Please check your email to verify your account.',
+        }
       })
 
-      return this.#generateTokenResponse(user)
+      return result
     } catch (error) {
       if (error.code === 'ER_DUP_ENTRY' || error.code === 'P2002') {
         throw new DuplicateEmailException(data.email)
@@ -48,6 +81,11 @@ export default class AuthService {
       throw new InvalidCredentialsException()
     }
 
+    // Reject login if email is not verified
+    if (!user.isVerified) {
+      throw new EmailNotVerifiedException()
+    }
+
     return this.#generateTokenResponse(user)
   }
 
@@ -63,6 +101,7 @@ export default class AuthService {
         id: user.id,
         email: user.email,
         fullName: user.fullName,
+        isVerified: user.isVerified,
       },
       token: token,
       type: 'bearer',
