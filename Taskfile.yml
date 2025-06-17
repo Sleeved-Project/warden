@@ -74,7 +74,7 @@ tasks:
   test:
     desc: Run tests (optional args - use test:unit or test:functional for specific suites)
     cmds:
-      - docker compose exec api npm test {{.CLI_ARGS}}
+      - docker compose exec api node ace test {{.CLI_ARGS}}
 
   test:unit:
     desc: Run unit tests only

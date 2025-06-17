@@ -10,11 +10,7 @@ export interface LoginData {
 }
 
 export interface TokenResponse {
-  user: {
-    id: string
-    email: string
-    fullName: string | null
-  }
+  user: UserPayload
   token: string
   type: string
 }
@@ -23,4 +19,11 @@ export interface UserPayload {
   id: string
   email: string
   fullName: string | null
+  isVerified: boolean
+}
+
+export interface RegisterResponse {
+  user: UserPayload
+  requiresVerification: boolean
+  message: string
 }
