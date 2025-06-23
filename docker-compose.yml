@@ -4,7 +4,7 @@ services:
   api:
     build: .
     ports:
-      - '0.0.0.0:8081:8081'
+      - '8081:8081'
     depends_on:
       - mysql
       - mailpit
@@ -14,6 +14,10 @@ services:
       - ./:/app
       - /app/node_modules
       - /app/build
+    networks:
+      - default
+      - sleeved-network
+    container_name: warden-api
 
   mysql:
     image: mysql:8
@@ -23,6 +27,8 @@ services:
       - .env
     volumes:
       - mysql-data:/var/lib/mysql
+    networks:
+      - default
 
   mailpit:
     image: axllent/mailpit:latest
@@ -32,3 +38,8 @@ services:
 
 volumes:
   mysql-data:
+
+networks:
+  default:
+  sleeved-network:
+    external: true
