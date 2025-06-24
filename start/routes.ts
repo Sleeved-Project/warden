@@ -22,6 +22,7 @@ router
         router.get('/me', [AuthController, 'me']).use(middleware.auth())
 
         router.get('/:provider/redirect', [SocialAuthController, 'redirect'])
+        router.post('/:provider/exchange-token', [SocialAuthController, 'exchangeToken'])
         router.get('/:provider/callback', [SocialAuthController, 'callback'])
 
         router.post('/verify-email', [EmailVerificationController, 'verify'])
