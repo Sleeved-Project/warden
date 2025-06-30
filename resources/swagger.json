@@ -1,0 +1,154 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Warden API",
+    "version": "1.0.0",
+    "description": "Authentication microservice for the Sleeved ecosystem\n- [Authentication Flow (Mermaid)](https://www.mermaidchart.com/app/projects/1ca9fcaf-ba83-47ac-85f9-93fc987be46d/diagrams/abfa2b9a-b605-44cf-935d-725d9e2d606e/version/v0.1/edit)"
+  },
+  "servers": [{ "url": "http://localhost:8081/api/v1" }],
+  "paths": {
+    "/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": ["Auth"],
+        "description": "Register a new user. After registration, you must verify your email using the code sent to your inbox.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "alice@example.com" },
+                  "password": { "type": "string", "minLength": 8, "example": "myAmazingPassword" },
+                  "fullName": { "type": "string", "example": "Alice Doe" }
+                },
+                "required": ["email", "password"]
+              },
+              "example": {
+                "email": "alice@example.com",
+                "password": "myAmazingPassword",
+                "fullName": "Alice Doe"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User registered, verification required" },
+          "409": { "description": "Email already exists" }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Login with email and password",
+        "tags": ["Auth"],
+        "description": "Login and receive a bearer token. Copy the `token` from the response and use it as a Bearer token in the Authorization header for authenticated requests (e.g. `/me`).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "alice@example.com" },
+                  "password": { "type": "string", "example": "myAmazingPassword" }
+                },
+                "required": ["email", "password"]
+              },
+              "example": {
+                "email": "alice@example.com",
+                "password": "myAmazingPassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful. Use the returned `token` as a Bearer token in the Authorization header for authenticated requests (see Authorize button above)."
+          },
+          "401": { "description": "Invalid credentials" },
+          "403": { "description": "Email not verified" }
+        }
+      }
+    },
+    "/verify-email": {
+      "post": {
+        "summary": "Verify email with code",
+        "tags": ["Auth"],
+        "description": "Verify your email using the code received by email. On success, a bearer token is returned. Copy the `token` from the response and use it as a Bearer token in the Authorization header for authenticated requests (e.g. `/me`).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "alice@example.com" },
+                  "code": { "type": "string", "minLength": 6, "maxLength": 6, "example": "123456" }
+                },
+                "required": ["email", "code"]
+              },
+              "example": {
+                "email": "alice@example.com",
+                "code": "123456"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified. Use the returned `token` as a Bearer token in the Authorization header for authenticated requests (see Authorize button above)."
+          },
+          "400": { "description": "Invalid or expired code" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    },
+    "/resend-verification": {
+      "post": {
+        "summary": "Resend verification code",
+        "tags": ["Auth"],
+        "description": "Resend the verification code to your email.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email" }
+                },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Verification code sent" },
+          "400": { "description": "Unable to send verification email" }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "summary": "Get authenticated user info",
+        "tags": ["Auth"],
+        "description": "Requires a valid Bearer token in the Authorization header. Use the Authorize button above or add the header manually: `Authorization: Bearer <token>`.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "User info" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

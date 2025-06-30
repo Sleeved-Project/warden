@@ -14,6 +14,7 @@ export default class RootController {
       ],
       status: 'WIP',
       documentation: 'https://sleeved.atlassian.net/wiki/x/A4BP',
+      swagger: '/docs',
     })
   }
 }

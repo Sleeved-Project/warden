@@ -6,9 +6,22 @@ A lightweight authentication microservice built with AdonisJS v6 and TypeScript 
 
 Warden provides token-based authentication services:
 
-- User registration and authentication
-- Access token generation and validation
-- User management
+- User registration and email verification (with 6-digit code)
+- Access token generation and validation (Bearer tokens)
+- User login (only after email verification)
+- User info retrieval (`/api/v1/me`)
+- Email resend for verification
+
+**Implementation to come :**
+
+- Refresh token flow
+- password reset flow
+- OAuth (Google, etc.) flow
+
+## 📚 Documentation
+
+- **Swagger:** [http://localhost:8081/docs](http://localhost:8081/docs)
+- **Authentication Flow (Mermaid diagram):** [https://sleeved.atlassian.net/wiki/x/A4DoAQ](https://sleeved.atlassian.net/wiki/x/A4DoAQ)
 
 ## Prerequisites
 
@@ -35,7 +48,7 @@ docker-compose build
 docker-compose up -d
 ```
 
-4. The service is now available at http://localhost:8010
+4. The service is now available at http://localhost:8081
 
 ## Task Commands Reference
 
@@ -57,6 +70,27 @@ This project uses [Task](https://taskfile.dev/) for managing development workflo
 | `task test`         | Run tests                           |
 | `task lint`         | Run linting                         |
 | `task format`       | Format code                         |
+
+## Integrating Warden with a Sleeved Project
+
+To use Warden as your authentication provider in another Sleeved API service:
+
+1. When a user logs in or registers (and verifies their email), your service receives a Bearer token from Warden.
+
+2. For each protected route in your API, require clients to send the Bearer token in the `Authorization` header.
+
+3. On each request to a protected route, your service must call Warden's `/api/v1/me` endpoint with the received token in the header `Authorization: Bearer <token>`.
+   - If Warden returns HTTP 200 and user info, the token is valid and you can authorize the request.
+   - If Warden returns HTTP 401, reject the request (invalid or expired token).
+
+4. Use the user info returned by `/me` to implement any role-based access or permissions needed in your service.
+
+5. If `/me` returns 401, respond with an authentication error and ask the client to re-authenticate.
+
+**Note:**
+
+- Always keep the Warden service URL and port up to date with your deployment (e.g., `http://warden-api:8081/api/v1/me` in Docker, or `http://localhost:8081/api/v1/me` in local dev).
+- This integration pattern is backend-to-backend and does not concern frontend logic.
 
 ## Code Quality Tools
 
@@ -96,3 +130,15 @@ npm run typecheck
 # Run all checks at once
 npm run check
 ```
+
+## Roadmap / TODO
+
+- [x] User registration with email verification code
+- [x] Login with email/password (only if verified)
+- [x] Resend verification code
+- [x] Access token (Bearer) generation
+- [x] User info endpoint (`/api/v1/me`)
+- [ ] Refresh token flow
+- [ ] Password reset flow
+- [ ] OAuth Google login
+- [ ] Account lockout/throttling
