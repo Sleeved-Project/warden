@@ -3,12 +3,15 @@ import { middleware } from '#start/kernel'
 
 const HealthCheckController = () => import('#controllers/health_check_controller')
 const RootController = () => import('#controllers/root_controller')
+const DocsController = () => import('#controllers/docs_controller')
 const ApiInfoController = () => import('#controllers/api_info_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const EmailVerificationController = () => import('#controllers/email_verification_controller')
 
 router.get('/', [RootController, 'handle'])
 router.get('/health', [HealthCheckController, 'handle'])
+router.get('/docs/json', [DocsController, 'swaggerJson'])
+router.get('/docs', [DocsController, 'swaggerUi'])
 
 router
   .group(() => {
