@@ -31,11 +31,6 @@ export default class AuthController {
 
   async me({ auth, response }: HttpContext) {
     const user = auth.user!
-    return response.ok({
-      id: user.id,
-      email: user.email,
-      fullName: user.fullName,
-      isVerified: user.isVerified,
-    })
+    return response.ok(this.authService.formatUserForResponse(user))
   }
 }
