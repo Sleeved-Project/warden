@@ -5,6 +5,7 @@ import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, column, beforeCreate } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
+import { UserRole } from '#types/auth'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -28,6 +29,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare isVerified: boolean
 
   @column()
+  declare role: UserRole
+
+  @column()
   declare verificationToken: string | null
 
   @column.dateTime()
@@ -44,5 +48,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @beforeCreate()
   static assignUuid(user: User) {
     user.id = uuidv4()
+  }
+
+  isAdmin(): boolean {
+    return this.role === UserRole.ADMIN
   }
 }
