@@ -99,10 +99,12 @@ export default class AuthService {
    */
   async #generateTokenResponse(user: User): Promise<TokenResponse> {
     const token = await this.tokenService.generateAuthToken(user)
+    const refreshToken = await this.tokenService.generateRefreshToken(user)
 
     return {
       user: this.formatUserForResponse(user),
       token: token,
+      refreshToken: refreshToken,
       type: 'bearer',
     }
   }

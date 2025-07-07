@@ -7,6 +7,7 @@ const DocsController = () => import('#controllers/docs_controller')
 const ApiInfoController = () => import('#controllers/api_info_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const EmailVerificationController = () => import('#controllers/email_verification_controller')
+const TokenController = () => import('#controllers/token_controller')
 
 router.get('/', [RootController, 'handle'])
 router.get('/health', [HealthCheckController, 'handle'])
@@ -25,6 +26,8 @@ router
 
         router.post('/verify-email', [EmailVerificationController, 'verify'])
         router.post('/resend-verification', [EmailVerificationController, 'resend'])
+
+        router.post('/refresh-token', [TokenController, 'refreshToken'])
       })
       .prefix('/v1')
   })
