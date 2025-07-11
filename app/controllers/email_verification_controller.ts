@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
 import EmailVerificationService from '#services/email_verification_service'
 import TokenService from '#services/token_service'
+import AuthService from '#services/auth_service'
 import InvalidVerificationCodeException from '#exceptions/invalid_verification_code_exception'
 import VerificationEmailException from '#exceptions/verification_email_exception'
 import { verifyEmailValidator, resendVerificationValidator } from '#validators/auth'
@@ -10,7 +11,8 @@ import { verifyEmailValidator, resendVerificationValidator } from '#validators/a
 export default class EmailVerificationController {
   constructor(
     protected emailVerificationService: EmailVerificationService,
-    protected tokenService: TokenService
+    protected tokenService: TokenService,
+    protected authService: AuthService
   ) {}
 
   /**
@@ -31,12 +33,7 @@ export default class EmailVerificationController {
     return response.json({
       status: true,
       message: 'Email verified successfully',
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-        isVerified: true,
-      },
+      user: this.authService.formatUserForResponse(user),
       token,
       type: 'bearer',
     })

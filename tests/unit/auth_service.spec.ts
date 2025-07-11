@@ -5,6 +5,7 @@ import TokenService from '#services/token_service'
 import EmailVerificationService from '#services/email_verification_service'
 import MailService from '#services/mail_service'
 import User from '#models/user'
+import { UserRole } from '#types/auth'
 import hash from '@adonisjs/core/services/hash'
 import testUtils from '@adonisjs/core/services/test_utils'
 import DuplicateEmailException from '#exceptions/duplicate_email_exception'
@@ -152,5 +153,50 @@ test.group('Auth Service', (group) => {
     } catch (error) {
       assert.instanceOf(error, InvalidCredentialsException)
     }
+  })
+})
+
+test.group('User Model', (group) => {
+  group.each.setup(() => {
+    return testUtils.db().withGlobalTransaction()
+  })
+
+  test('new users have USER role by default', async ({ assert }) => {
+    const user = await User.create({
+      email: 'newuser@example.com',
+      password: 'password123',
+      fullName: 'New User',
+      isVerified: true,
+    })
+
+    await user.refresh()
+    assert.equal(user.role, UserRole.USER)
+  })
+
+  test('isAdmin returns true only for admin users', async ({ assert }) => {
+    const regularUser = await UserFactory.merge({
+      role: UserRole.USER,
+    }).create()
+
+    const adminUser = await UserFactory.merge({
+      role: UserRole.ADMIN,
+    }).create()
+
+    assert.isFalse(regularUser.isAdmin())
+    assert.isTrue(adminUser.isAdmin())
+  })
+
+  test('role can be set explicitly during creation', async ({ assert }) => {
+    const adminUser = await User.create({
+      email: 'admin@example.com',
+      password: 'password123',
+      fullName: 'Admin User',
+      isVerified: true,
+      role: UserRole.ADMIN,
+    })
+
+    await adminUser.refresh()
+    assert.equal(adminUser.role, UserRole.ADMIN)
+    assert.isTrue(adminUser.isAdmin())
   })
 })

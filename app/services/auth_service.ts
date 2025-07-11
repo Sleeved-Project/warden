@@ -18,6 +18,19 @@ export default class AuthService {
   ) {}
 
   /**
+   * Format user model data for API responses
+   */
+  public formatUserForResponse(user: User): UserPayload {
+    return {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      isVerified: user.isVerified,
+      role: user.role,
+    }
+  }
+
+  /**
    * Register a new user
    */
   async register(data: RegisterData): Promise<RegisterResponse> {
@@ -25,7 +38,6 @@ export default class AuthService {
       // Begin a database transaction to ensure atomicity of the registration process
       // If any operation within this transaction fails, all changes will be rolled back
       const result = await db.transaction(async (trx) => {
-        // Créer l'utilisateur dans la transaction
         const user = await User.create(
           {
             email: data.email,
@@ -39,17 +51,9 @@ export default class AuthService {
         // Send verification email
         await this.emailVerificationService.sendVerificationEmail(user, trx)
 
-        // Format user data for response
-        const userData: UserPayload = {
-          id: user.id,
-          email: user.email,
-          fullName: user.fullName,
-          isVerified: false,
-        }
-
         // Return registration success
         return {
-          user: userData,
+          user: this.formatUserForResponse(user),
           requiresVerification: true,
           message: 'Registration successful. Please check your email to verify your account.',
         }
@@ -97,12 +101,7 @@ export default class AuthService {
     const token = await this.tokenService.generateAuthToken(user)
 
     return {
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-        isVerified: user.isVerified,
-      },
+      user: this.formatUserForResponse(user),
       token: token,
       type: 'bearer',
     }
