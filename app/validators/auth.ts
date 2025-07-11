@@ -3,7 +3,11 @@ import vine from '@vinejs/vine'
 export const registerValidator = vine.compile(
   vine.object({
     email: vine.string().email().trim().toLowerCase(),
-    password: vine.string().minLength(8),
+    password: vine
+      .string()
+      .minLength(8)
+      .maxLength(64)
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,64}$/),
     fullName: vine.string().trim().optional(),
   })
 )

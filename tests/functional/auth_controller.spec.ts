@@ -23,7 +23,7 @@ test.group('Authentication Controller', (group) => {
   }) => {
     const userData = {
       email: 'test@example.com',
-      password: 'password123',
+      password: 'Password123*',
       fullName: 'Test User',
     }
 
@@ -56,7 +56,7 @@ test.group('Authentication Controller', (group) => {
 
     const response = await client.post('/api/v1/register').json({
       email: existingUser.email,
-      password: 'password123',
+      password: 'Password123*',
       fullName: 'Duplicate User',
     })
 
@@ -73,7 +73,7 @@ test.group('Authentication Controller', (group) => {
 
     const response = await client.post('/api/v1/login').json({
       email: user.email,
-      password: 'password123',
+      password: 'Password123*',
     })
 
     response.assertStatus(200)
@@ -95,7 +95,7 @@ test.group('Authentication Controller', (group) => {
 
     const response = await client.post('/api/v1/login').json({
       email: user.email,
-      password: 'password123',
+      password: 'Password123*',
     })
 
     response.assertStatus(403)
@@ -129,7 +129,7 @@ test.group('Authentication Controller', (group) => {
 
     const loginResponse = await client.post('/api/v1/login').json({
       email: user.email,
-      password: 'password123',
+      password: 'Password123*',
     })
 
     const token = loginResponse.body().token

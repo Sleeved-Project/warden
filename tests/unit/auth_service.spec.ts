@@ -49,7 +49,7 @@ test.group('Auth Service', (group) => {
   test('register creates a new user and returns token response', async ({ assert }) => {
     const userData = {
       email: 'test@example.com',
-      password: 'password123',
+      password: 'Password123*',
       fullName: 'Test User',
     }
 
@@ -83,7 +83,7 @@ test.group('Auth Service', (group) => {
     try {
       await authService.register({
         email: existingUser.email,
-        password: 'password123',
+        password: 'Password123*',
         fullName: 'Duplicate User',
       })
       assert.fail('Should have thrown DuplicateEmailException')
@@ -100,7 +100,7 @@ test.group('Auth Service', (group) => {
 
     const result = await authService.login({
       email: user.email,
-      password: 'password123',
+      password: 'Password123*',
     })
 
     assert.exists(result.token)
@@ -118,7 +118,7 @@ test.group('Auth Service', (group) => {
     try {
       await authService.login({
         email: user.email,
-        password: 'password123',
+        password: 'Password123*',
       })
       assert.fail('Should have thrown EmailNotVerifiedException')
     } catch (error) {
@@ -130,7 +130,7 @@ test.group('Auth Service', (group) => {
     try {
       await authService.login({
         email: 'nonexistent@example.com',
-        password: 'password123',
+        password: 'Password123*',
       })
       assert.fail('Should have thrown InvalidCredentialsException')
     } catch (error) {

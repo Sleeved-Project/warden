@@ -22,7 +22,7 @@ test.group('Email Verification Flow', (group) => {
     // 1. Register a new user
     const userData = {
       email: 'newuser@example.com',
-      password: 'password123',
+      password: 'Password123*',
       fullName: 'New User',
     }
 
@@ -92,14 +92,14 @@ test.group('Email Verification Flow', (group) => {
     // Create an unverified user directly
     const user = await UserFactory.merge({
       email: 'unverified@example.com',
-      password: 'password123',
+      password: 'Password123*',
       isVerified: false,
     }).create()
 
     // Try to login
     const loginResponse = await client.post('/api/v1/login').json({
       email: user.email,
-      password: 'password123',
+      password: 'Password123*',
     })
 
     // Should fail with email not verified error
