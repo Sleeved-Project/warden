@@ -144,6 +144,7 @@ test.group('Authentication Controller', (group) => {
 
     assert.exists(body.isVerified)
     assert.isTrue(!!body.isVerified)
+    assert.equal(body.role, user.role)
   })
 
   test('me endpoint returns 401 when not authenticated', async ({ client }) => {

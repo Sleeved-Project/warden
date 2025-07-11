@@ -20,10 +20,16 @@ export interface UserPayload {
   email: string
   fullName: string | null
   isVerified: boolean
+  role: UserRole
 }
 
 export interface RegisterResponse {
   user: UserPayload
   requiresVerification: boolean
   message: string
+}
+
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
 }
