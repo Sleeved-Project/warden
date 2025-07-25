@@ -43,5 +43,6 @@ jobs:
           client-payload: '{"version": "${{ github.event.inputs.version }}"}'
 
       - name: Add version to job summary
+        if: success()
         run: |
           echo "## ✅ Built image version: \`${{ github.event.inputs.version }}\`" >> $GITHUB_STEP_SUMMARY
