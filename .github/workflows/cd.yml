@@ -1,4 +1,4 @@
-name: 🚀 Build & Push Multi-Arch Docker Image
+name: 📦 Build & Push Multi-Arch Docker Image
 
 on:
   workflow_dispatch:
@@ -31,5 +31,13 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/your-image-name:${{ github.event.inputs.version }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/your-image-name:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/warden:${{ github.event.inputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/warden:latest
+
+      - name: Trigger Infra repo to update tag
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.INFRA_TRIGGER_TOKEN }}
+          repository: Sleeved-Project/infra
+          event-type: update-warden-tag
+          client-payload: '{"version": "${{ github.event.inputs.version }}"}'
