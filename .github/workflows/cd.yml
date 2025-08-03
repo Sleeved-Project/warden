@@ -1,11 +1,8 @@
 name: 📦 Build & Push Multi-Arch Docker Image
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version tag (e.g. v1.2.3)'
-        required: true
+  release:
+    types: [published]
 
 jobs:
   build-and-push:
@@ -31,7 +28,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/warden:${{ github.event.inputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/warden:${{ github.ref_name}}
             ${{ secrets.DOCKERHUB_USERNAME }}/warden:latest
 
       - name: Trigger Infra repo to update tag
@@ -40,9 +37,9 @@ jobs:
           token: ${{ secrets.INFRA_TRIGGER_TOKEN }}
           repository: Sleeved-Project/infra
           event-type: update-warden-tag
-          client-payload: '{"version": "${{ github.event.inputs.version }}"}'
+          client-payload: '{"version": "${{ github.ref_name }}"}'
 
       - name: Add version to job summary
         if: success()
         run: |
-          echo "## ✅ Built image version: \`${{ github.event.inputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "## ✅ Built image version: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
