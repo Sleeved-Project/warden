@@ -24,7 +24,7 @@ export default class AuthService {
     return {
       id: user.id,
       email: user.email,
-      fullName: user.fullName,
+      username: user.username,
       isVerified: user.isVerified,
       role: user.role,
     }
@@ -42,7 +42,7 @@ export default class AuthService {
           {
             email: data.email,
             password: data.password,
-            fullName: data.fullName,
+            username: data.username,
             isVerified: false,
           },
           { client: trx }

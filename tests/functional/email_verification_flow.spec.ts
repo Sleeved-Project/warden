@@ -23,7 +23,7 @@ test.group('Email Verification Flow', (group) => {
     const userData = {
       email: 'newuser@example.com',
       password: 'Password123*',
-      fullName: 'New User',
+      username: 'New User',
     }
 
     const registerResponse = await client.post('/api/v1/register').json(userData)
@@ -84,7 +84,7 @@ test.group('Email Verification Flow', (group) => {
     meResponse.assertStatus(200)
     meResponse.assertBodyContains({
       email: userData.email,
-      fullName: userData.fullName,
+      username: userData.username,
     })
   })
 

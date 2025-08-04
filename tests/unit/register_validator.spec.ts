@@ -6,7 +6,7 @@ test.group('Register Validator', () => {
     const data = {
       email: 'test@example.com',
       password: 'Valid1@Password',
-      fullName: 'Test User',
+      username: 'Test User',
     }
 
     const result = await registerValidator.validate(data)
@@ -17,7 +17,7 @@ test.group('Register Validator', () => {
     const data = {
       email: 'test@example.com',
       password: 'simplepass',
-      fullName: 'Test User',
+      username: 'Test User',
     }
 
     try {

@@ -51,7 +51,7 @@ test.group('Auth Service', (group) => {
     const userData = {
       email: 'test@example.com',
       password: 'Password123*',
-      fullName: 'Test User',
+      username: 'Test User',
     }
 
     const result = await authService.register(userData)
@@ -59,7 +59,7 @@ test.group('Auth Service', (group) => {
     assert.exists(result.message)
     assert.isTrue(result.requiresVerification)
     assert.equal(result.user.email, userData.email)
-    assert.equal(result.user.fullName, userData.fullName)
+    assert.equal(result.user.username, userData.username)
     assert.isFalse(result.user.isVerified)
 
     const user = await User.findBy('email', userData.email)
@@ -85,7 +85,7 @@ test.group('Auth Service', (group) => {
       await authService.register({
         email: existingUser.email,
         password: 'Password123*',
-        fullName: 'Duplicate User',
+        username: 'Duplicate User',
       })
       assert.fail('Should have thrown DuplicateEmailException')
     } catch (error) {
@@ -107,7 +107,7 @@ test.group('Auth Service', (group) => {
     assert.exists(result.token)
     assert.equal(result.type, 'bearer')
     assert.equal(result.user.email, user.email)
-    assert.equal(result.user.fullName, user.fullName)
+    assert.equal(result.user.username, user.username)
     assert.equal(user!.isVerified, 1)
   })
 
@@ -165,7 +165,7 @@ test.group('User Model', (group) => {
     const user = await User.create({
       email: 'newuser@example.com',
       password: 'password123',
-      fullName: 'New User',
+      username: 'New User',
       isVerified: true,
     })
 
@@ -190,7 +190,7 @@ test.group('User Model', (group) => {
     const adminUser = await User.create({
       email: 'admin@example.com',
       password: 'password123',
-      fullName: 'Admin User',
+      username: 'Admin User',
       isVerified: true,
       role: UserRole.ADMIN,
     })

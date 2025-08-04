@@ -21,14 +21,14 @@
                 "properties": {
                   "email": { "type": "string", "format": "email", "example": "alice@example.com" },
                   "password": { "type": "string", "minLength": 8, "example": "myAmazingPassword" },
-                  "fullName": { "type": "string", "example": "Alice Doe" }
+                  "username": { "type": "string", "example": "Alice Doe" }
                 },
                 "required": ["email", "password"]
               },
               "example": {
                 "email": "alice@example.com",
                 "password": "myAmazingPassword",
-                "fullName": "Alice Doe"
+                "username": "Alice Doe"
               }
             }
           }

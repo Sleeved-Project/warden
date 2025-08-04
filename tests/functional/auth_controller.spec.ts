@@ -24,7 +24,7 @@ test.group('Authentication Controller', (group) => {
     const userData = {
       email: 'test@example.com',
       password: 'Password123*',
-      fullName: 'Test User',
+      username: 'Test User',
     }
 
     const response = await client.post('/api/v1/register').json(userData)
@@ -34,7 +34,7 @@ test.group('Authentication Controller', (group) => {
       requiresVerification: true,
       user: {
         email: userData.email,
-        fullName: userData.fullName,
+        username: userData.username,
         isVerified: false,
       },
     })
@@ -57,7 +57,7 @@ test.group('Authentication Controller', (group) => {
     const response = await client.post('/api/v1/register').json({
       email: existingUser.email,
       password: 'Password123*',
-      fullName: 'Duplicate User',
+      username: 'Duplicate User',
     })
 
     response.assertStatus(409)
@@ -80,7 +80,7 @@ test.group('Authentication Controller', (group) => {
     response.assertBodyContains({
       user: {
         email: user.email,
-        fullName: user.fullName,
+        username: user.username,
       },
       type: 'bearer',
     })
@@ -123,7 +123,7 @@ test.group('Authentication Controller', (group) => {
   test('me endpoint returns user information when authenticated', async ({ client, assert }) => {
     const user = await UserFactory.merge({
       email: 'me@example.com',
-      fullName: 'Me User',
+      username: 'Me User',
       isVerified: true,
     }).create()
 
@@ -140,7 +140,7 @@ test.group('Authentication Controller', (group) => {
 
     const body = response.body()
     assert.equal(body.email, user.email)
-    assert.equal(body.fullName, user.fullName)
+    assert.equal(body.username, user.username)
 
     assert.exists(body.isVerified)
     assert.isTrue(!!body.isVerified)
