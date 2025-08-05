@@ -43,7 +43,7 @@ export default class MailService {
     return {
       id: user.id,
       email: user.email,
-      fullName: user.fullName || null,
+      username: user.username || null,
     }
   }
 

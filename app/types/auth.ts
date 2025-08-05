@@ -1,7 +1,7 @@
 export interface RegisterData {
   email: string
   password: string
-  fullName?: string
+  username?: string
 }
 
 export interface LoginData {
@@ -18,7 +18,7 @@ export interface TokenResponse {
 export interface UserPayload {
   id: string
   email: string
-  fullName: string | null
+  username: string | null
   isVerified: boolean
   role: UserRole
 }

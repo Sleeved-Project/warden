@@ -48,9 +48,9 @@ test.group('Mail Service', (group) => {
     message.assertHtmlIncludes(verificationCode)
   })
 
-  test('sendVerificationEmail handles user without fullName', async ({ assert }) => {
+  test('sendVerificationEmail handles user without username', async ({ assert }) => {
     const userWithoutName = await UserFactory.merge({
-      fullName: null,
+      username: null,
     }).create()
 
     await mailService.sendVerificationEmail(userWithoutName, '123456')
