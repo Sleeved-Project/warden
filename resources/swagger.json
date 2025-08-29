@@ -43,7 +43,7 @@
       "post": {
         "summary": "Login with email and password",
         "tags": ["Auth"],
-        "description": "Login and receive a bearer token. Copy the `token` from the response and use it as a Bearer token in the Authorization header for authenticated requests (e.g. `/me`).",
+        "description": "Login and receive a bearer token and a refresh token. Use the returned `token` as a Bearer token in the Authorization header for authenticated requests (e.g. `/me`).",
         "requestBody": {
           "required": true,
           "content": {
@@ -65,7 +65,12 @@
         },
         "responses": {
           "200": {
-            "description": "Login successful. Use the returned `token` as a Bearer token in the Authorization header for authenticated requests (see Authorize button above)."
+            "description": "Login successful. Response includes access token and refresh token.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TokenResponse" }
+              }
+            }
           },
           "401": { "description": "Invalid credentials" },
           "403": { "description": "Email not verified" }
@@ -137,8 +142,51 @@
         "description": "Requires a valid Bearer token in the Authorization header. Use the Authorize button above or add the header manually: `Authorization: Bearer <token>`.",
         "security": [{ "bearerAuth": [] }],
         "responses": {
-          "200": { "description": "User info" },
+          "200": {
+            "description": "User info",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
+              }
+            }
+          },
           "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/refresh-token": {
+      "post": {
+        "summary": "Refresh access token",
+        "tags": ["Auth"],
+        "description": "Exchange a refresh token for a new short-lived access token. Provide the refresh token received at login.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RefreshRequest" },
+              "example": {
+                "refreshToken": "oat_NQ.OE1CMUpqVnJUdGp1S3hNcjhlSkh6UTlLVHYzcUVMZ2tncHltbjA0eDY1NDIwNzM2"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New access token issued",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RefreshResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired refresh token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
         }
       }
     }
@@ -148,6 +196,64 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "34261c3d-63ba-4bc0-aba2-b70ac39e515c" },
+          "email": { "type": "string", "format": "email", "example": "alice@example.com" },
+          "username": { "type": ["string", "null"], "example": "Alice Doe" },
+          "isVerified": { "type": "integer", "example": 1 },
+          "role": { "type": "string", "example": "user" }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "user": { "$ref": "#/components/schemas/User" }
+        }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "user": { "$ref": "#/components/schemas/User" },
+          "token": {
+            "type": "string",
+            "example": "oat_NA.SWVwanlJUmVTVzNEdVJxVjY4Ql9Rck9aSFVJd0V1M2gwRUgxdUYyMTk5MTg0NzM3Mg"
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "oat_NQ.OE1CMUpqVnJUdGp1S3hNcjhlSkh6UTlLVHYzcUVMZ2tncHltbjA0eDY1NDIwNzM2"
+          },
+          "type": { "type": "string", "example": "bearer" }
+        }
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": { "type": "string" }
+        },
+        "required": ["refreshToken"]
+      },
+      "RefreshResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "oat_NA.SWVwanlJUmVTVzNEdVJxVjY4Ql9Rck9aSFVJd0V1M2gwRUgxdUYyMTk5MTg0NzM3Mg"
+          },
+          "type": { "type": "string", "example": "bearer" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string", "example": "E_INVALID_REFRESH_TOKEN" },
+          "message": { "type": "string", "example": "Invalid or expired refresh token" },
+          "status": { "type": "boolean", "example": false }
+        }
       }
     }
   }

@@ -12,6 +12,12 @@ export interface LoginData {
 export interface TokenResponse {
   user: UserPayload
   token: string
+  refreshToken: string
+  type: string
+}
+
+export interface TokenRefreshResponse {
+  token: string
   type: string
 }
 
