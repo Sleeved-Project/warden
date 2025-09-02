@@ -29,12 +29,14 @@ export default class EmailVerificationController {
 
     // Generate auth token for the user
     const token = await this.tokenService.generateAuthToken(user)
+    const refreshToken = await this.tokenService.generateRefreshToken(user)
 
     return response.json({
       status: true,
       message: 'Email verified successfully',
       user: this.authService.formatUserForResponse(user),
       token,
+      refreshToken: refreshToken.token,
       type: 'bearer',
     })
   }

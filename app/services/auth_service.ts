@@ -98,11 +98,13 @@ export default class AuthService {
    * @private
    */
   async #generateTokenResponse(user: User): Promise<TokenResponse> {
-    const token = await this.tokenService.generateAuthToken(user)
+    const refresh = await this.tokenService.generateRefreshToken(user)
+    const token = await this.tokenService.generateAuthToken(user, refresh.id)
 
     return {
       user: this.formatUserForResponse(user),
       token: token,
+      refreshToken: refresh.token,
       type: 'bearer',
     }
   }

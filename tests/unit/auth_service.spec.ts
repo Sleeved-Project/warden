@@ -106,6 +106,8 @@ test.group('Auth Service', (group) => {
 
     assert.exists(result.token)
     assert.equal(result.type, 'bearer')
+    assert.exists(result.refreshToken)
+    assert.equal(result.type, 'bearer')
     assert.equal(result.user.email, user.email)
     assert.equal(result.user.username, user.username)
     assert.equal(user!.isVerified, 1)
