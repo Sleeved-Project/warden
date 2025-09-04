@@ -8,6 +8,7 @@ const ApiInfoController = () => import('#controllers/api_info_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const EmailVerificationController = () => import('#controllers/email_verification_controller')
 const TokenController = () => import('#controllers/token_controller')
+const AvailabilityController = () => import('#controllers/availability_controller')
 
 router.get('/', [RootController, 'handle'])
 router.get('/health', [HealthCheckController, 'handle'])
@@ -23,6 +24,7 @@ router
         router.post('/register', [AuthController, 'register'])
         router.post('/login', [AuthController, 'login'])
         router.get('/me', [AuthController, 'me']).use(middleware.auth())
+        router.get('/availability', [AvailabilityController, 'check'])
 
         router.post('/verify-email', [EmailVerificationController, 'verify'])
         router.post('/resend-verification', [EmailVerificationController, 'resend'])
